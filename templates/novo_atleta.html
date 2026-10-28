@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Atleta — Escolinha ABC</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f4f8;
+            color: #1a2332;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #1a2332;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            height: 56px;
+        }
+        nav .logo {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: .5px;
+            text-decoration: none;
+            margin-right: auto;
+        }
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: .875rem;
+            transition: color .15s;
+        }
+        nav a:hover { color: #fff; }
+
+        .page {
+            max-width: 760px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a2332;
+        }
+        .page-header p {
+            margin-top: .25rem;
+            font-size: .875rem;
+            color: #64748b;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+        .card-title {
+            background: #1a2332;
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: .6rem 1.25rem;
+        }
+        .card-body {
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .card-body.single { grid-template-columns: 1fr; }
+        .card-body.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+        .field { display: flex; flex-direction: column; gap: .3rem; }
+        .field.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: .75rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: .55rem .75rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: .9rem;
+            color: #1a2332;
+            background: #f8fafc;
+            transition: border-color .15s, background .15s;
+            outline: none;
+        }
+        input:focus, select:focus {
+            border-color: #3b82f6;
+            background: #fff;
+        }
+
+        .check-group {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            padding-top: .2rem;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            cursor: pointer;
+        }
+        .check-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #3b82f6;
+            cursor: pointer;
+        }
+        .check-item span {
+            font-size: .875rem;
+            color: #1a2332;
+        }
+
+        .actions {
+            display: flex;
+            gap: .75rem;
+            justify-content: flex-end;
+            margin-top: .5rem;
+        }
+        .btn {
+            padding: .6rem 1.5rem;
+            border-radius: 6px;
+            font-size: .875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity .15s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { opacity: .85; }
+        .btn-primary { background: #1a2332; color: #fff; }
+        .btn-ghost {
+            background: transparent;
+            color: #64748b;
+            border: 1.5px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/atletas" class="logo">Escolinha ABC</a>
+    <a href="/atletas">Atletas</a>
+    <a href="/relatorios">Relatórios</a>
+    <a href="/pagamentos">Pagamentos</a>
+</nav>
+
+<div class="page">
+
+    <div class="page-header">
+        <h1>Cadastrar atleta</h1>
+        <p>Preencha os dados do novo atleta. Campos obrigatórios marcados com *</p>
+    </div>
+
+    <form action="/atletas/novo" method="POST">
+
+        <!-- Dados pessoais -->
+        <div class="card">
+            <div class="card-title">Dados pessoais</div>
+            <div class="card-body">
+                <div class="field full">
+                    <label for="nome">Nome completo *</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Nome do atleta">
+                </div>
+                <div class="field">
+                    <label for="data_nascimento">Data de nascimento *</label>
+                    <input type="date" id="data_nascimento" name="data_nascimento" required>
+                </div>
+                <div class="field">
+                    <label for="cpf_atleta">CPF do atleta *</label>
+                    <input type="text" id="cpf_atleta" name="cpf_atleta" required placeholder="000.000.000-00">
+                </div>
+            </div>
+        </div>
+
+        <!-- Responsáveis -->
+        <div class="card">
+            <div class="card-title">Responsáveis</div>
+            <div class="card-body">
+                <div class="field">
+                    <label for="pai">Nome do pai *</label>
+                    <input type="text" id="pai" name="pai" required placeholder="Nome do pai">
+                </div>
+                <div class="field">
+                    <label for="mae">Nome da mãe *</label>
+                    <input type="text" id="mae" name="mae" required placeholder="Nome da mãe">
+                </div>
+                <div class="field full">
+                    <label for="cpf_responsavel">CPF do responsável *</label>
+                    <input type="text" id="cpf_responsavel" name="cpf_responsavel" required placeholder="CPF de quem assina o contrato">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contato -->
+        <div class="card">
+            <div class="card-title">Contato e localização</div>
+            <div class="card-body">
+                <div class="field">
+                    <label for="whats">WhatsApp *</label>
+                    <input type="tel" id="whats" name="whats" required placeholder="(67) 99999-9999">
+                </div>
+                <div class="field">
+                    <label for="escola">Escola *</label>
+                    <input type="text" id="escola" name="escola" required placeholder="Nome da escola">
+                </div>
+                <div class="field full">
+                    <label for="endereco">Endereço *</label>
+                    <input type="text" id="endereco" name="endereco" required placeholder="Rua, número, bairro">
+                </div>
+            </div>
+        </div>
+
+        <!-- Categoria e modalidade -->
+        <div class="card">
+            <div class="card-title">Categoria e modalidade</div>
+            <div class="card-body">
+                <div class="field">
+                    <label for="categoria_id">Categoria *</label>
+                    <select id="categoria_id" name="categoria_id" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="1">Sub-9</option>
+                        <option value="2">Sub-11</option>
+                        <option value="3">Sub-13</option>
+                        <option value="4">Sub-15</option>
+                        <option value="5">Sub-17</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Modalidades *</label>
+                    <div class="check-group">
+                        <label class="check-item">
+                            <input type="checkbox" name="modalidades" value="1">
+                            <span>Futsal</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="modalidades" value="2">
+                            <span>Futebol de campo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financeiro -->
+        <div class="card">
+            <div class="card-title">Financeiro</div>
+            <div class="card-body triple">
+                <div class="field">
+                    <label for="desconto">Desconto (R$)</label>
+                    <input type="number" id="desconto" name="desconto" placeholder="0" min="0" step="0.01">
+                </div>
+                <div class="field">
+                    <label>Bolsa integral</label>
+                    <div class="check-group">
+                        <label class="check-item">
+                            <input type="checkbox" name="bolsa" value="1">
+                            <span>Atleta tem bolsa</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Equipe</label>
+                    <div class="check-group">
+                        <label class="check-item">
+                            <input type="checkbox" name="equipe" value="1">
+                            <span>Participa dos jogos</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/atletas" class="btn btn-ghost">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar atleta</button>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>

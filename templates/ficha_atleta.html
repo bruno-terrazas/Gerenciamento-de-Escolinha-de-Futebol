@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ atleta['nome'] }} — Escolinha ABC</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f4f8;
+            color: #1a2332;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #1a2332;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            height: 56px;
+        }
+        nav .logo {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            margin-right: auto;
+        }
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: .875rem;
+            transition: color .15s;
+        }
+        nav a:hover { color: #fff; }
+
+        .page {
+            max-width: 760px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header da ficha */
+        .ficha-header {
+            background: #1a2332;
+            border-radius: 10px;
+            padding: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+        .ficha-header-left { display: flex; align-items: center; gap: 1.25rem; }
+        .avatar {
+            width: 56px;
+            height: 56px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .ficha-header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .ficha-header .meta {
+            margin-top: .25rem;
+            font-size: .8rem;
+            color: #94a3b8;
+            display: flex;
+            gap: .75rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: .2rem .65rem;
+            border-radius: 99px;
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .badge-ativo   { background: #dcfce7; color: #15803d; }
+        .badge-inativo { background: #fee2e2; color: #b91c1c; }
+        .badge-bolsa   { background: #dbeafe; color: #1d4ed8; }
+        .badge-equipe  { background: #fef9c3; color: #854d0e; }
+
+        .header-actions { display: flex; gap: .6rem; }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+        .card-title {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: .65rem 1.25rem;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+        .card-body {
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .card-body.triple { grid-template-columns: 1fr 1fr 1fr; }
+        .card-body.single { grid-template-columns: 1fr; }
+
+        .field label {
+            display: block;
+            font-size: .7rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: .2rem;
+        }
+        .field p {
+            font-size: .9rem;
+            color: #1a2332;
+            font-weight: 500;
+        }
+
+        /* Modalidades */
+        .modalidade-list {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            padding: 1.25rem;
+        }
+        .modalidade-tag {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: .35rem .85rem;
+            font-size: .8rem;
+            font-weight: 600;
+        }
+        .modalidade-vazia {
+            padding: 1.25rem;
+            font-size: .875rem;
+            color: #94a3b8;
+        }
+
+        /* Botões */
+        .btn {
+            padding: .5rem 1.1rem;
+            border-radius: 6px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity .15s;
+        }
+        .btn:hover { opacity: .85; }
+        .btn-edit  { background: #3b82f6; color: #fff; }
+        .btn-delete {
+            background: transparent;
+            color: #ef4444;
+            border: 1.5px solid #fca5a5;
+        }
+        .btn-back {
+            background: transparent;
+            color: #64748b;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/atletas" class="logo">Escolinha ABC</a>
+    <a href="/atletas">Atletas</a>
+    <a href="/relatorios">Relatórios</a>
+    <a href="/pagamentos">Pagamentos</a>
+</nav>
+
+<div class="page">
+
+    <div class="page-actions">
+        <a href="/atletas" class="btn btn-back">← Voltar</a>
+    </div>
+
+    <!-- Header da ficha -->
+    <div class="ficha-header">
+        <div class="ficha-header-left">
+            <div class="avatar">{{ atleta['nome'][0] | upper }}</div>
+            <div>
+                <h1>{{ atleta['nome'] }}</h1>
+                <div class="meta">
+                    <span>{{ atleta['nome_categoria'] }}</span>
+                    <span>·</span>
+                    <span>CPF {{ atleta['cpf_atleta'] }}</span>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:.4rem; align-items:flex-end;">
+            <span class="badge {{ 'badge-ativo' if atleta['status'] == 'ativo' else 'badge-inativo' }}">
+                {{ atleta['status'] }}
+            </span>
+            {% if atleta['bolsa'] == 1 %}
+            <span class="badge badge-bolsa">Bolsa</span>
+            {% endif %}
+            {% if atleta['equipe'] == 1 %}
+            <span class="badge badge-equipe">Equipe</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Dados pessoais -->
+    <div class="card">
+        <div class="card-title">Dados pessoais</div>
+        <div class="card-body triple">
+            <div class="field">
+                <label>Nome completo</label>
+                <p>{{ atleta['nome'] }}</p>
+            </div>
+            <div class="field">
+                <label>Data de nascimento</label>
+                <p>{{ atleta['data_nascimento'] }}</p>
+            </div>
+            <div class="field">
+                <label>CPF do atleta</label>
+                <p>{{ atleta['cpf_atleta'] }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsáveis -->
+    <div class="card">
+        <div class="card-title">Responsáveis</div>
+        <div class="card-body triple">
+            <div class="field">
+                <label>Pai</label>
+                <p>{{ atleta['pai'] }}</p>
+            </div>
+            <div class="field">
+                <label>Mãe</label>
+                <p>{{ atleta['mae'] }}</p>
+            </div>
+            <div class="field">
+                <label>CPF do responsável</label>
+                <p>{{ atleta['cpf_responsavel'] }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contato -->
+    <div class="card">
+        <div class="card-title">Contato e localização</div>
+        <div class="card-body triple">
+            <div class="field">
+                <label>WhatsApp</label>
+                <p>{{ atleta['whats'] }}</p>
+            </div>
+            <div class="field">
+                <label>Escola</label>
+                <p>{{ atleta['escola'] }}</p>
+            </div>
+            <div class="field">
+                <label>Endereço</label>
+                <p>{{ atleta['endereco'] }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modalidades -->
+    <div class="card">
+        <div class="card-title">Modalidades</div>
+        {% if modalidades %}
+        <div class="modalidade-list">
+            {% for m in modalidades %}
+            <span class="modalidade-tag">{{ m['nome'] }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="modalidade-vazia">Nenhuma modalidade cadastrada.</p>
+        {% endif %}
+    </div>
+
+    <!-- Financeiro -->
+    <div class="card">
+        <div class="card-title">Financeiro</div>
+        <div class="card-body triple">
+            <div class="field">
+                <label>Mensalidade</label>
+                <p>R$ {{ "%.2f"|format(valor) }}</p>
+            </div>
+            <div class="field">
+                <label>Bolsa integral</label>
+                <p>{{ 'Sim' if atleta['bolsa'] == 1 else 'Não' }}</p>
+            </div>
+            <div class="field">
+                <label>Desconto</label>
+                <p>{% if atleta['desconto'] and atleta['desconto'] > 0 %}R$ {{ "%.2f"|format(atleta['desconto']) }}{% else %}—{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico de pagamentos -->
+    <div class="card">
+        <div class="card-title">Histórico de pagamentos</div>
+        {% if relatorio_pagamentos %}
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+                    <th style="padding:.6rem 1.25rem; text-align:left; font-size:.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.5px;">Mês</th>
+                    <th style="padding:.6rem 1.25rem; text-align:left; font-size:.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.5px;">Tipo</th>
+                    <th style="padding:.6rem 1.25rem; text-align:left; font-size:.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.5px;">Valor</th>
+                    <th style="padding:.6rem 1.25rem; text-align:left; font-size:.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.5px;">Status</th>
+                    <th style="padding:.6rem 1.25rem;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in relatorio_pagamentos %}
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:.7rem 1.25rem; font-size:.875rem; color:#1a2332;">{{ p['mes_referencia'] }}</td>
+                    <td style="padding:.7rem 1.25rem; font-size:.875rem; color:#1a2332; text-transform:capitalize;">{{ p['tipo'] }}</td>
+                    <td style="padding:.7rem 1.25rem; font-size:.875rem; color:#1a2332;">R$ {{ "%.2f"|format(p['valor']) }}</td>
+                    <td style="padding:.7rem 1.25rem;">
+                        <span style="padding:.2rem .65rem; border-radius:99px; font-size:.7rem; font-weight:700; text-transform:uppercase;
+                            background:{{ '#dcfce7' if p['status'] == 'pago' else '#fee2e2' }};
+                            color:{{ '#15803d' if p['status'] == 'pago' else '#b91c1c' }};">
+                            {{ p['status'] }}
+                        </span>
+                    </td>
+                    <td style="padding:.7rem 1.25rem; text-align:right;">
+                        {% if p['status'] == 'pendente' %}
+                        <form action="/pagamentos/{{ p['id'] }}/pagar" method="POST" style="display:inline;">
+                            <button type="submit" style="padding:.3rem .8rem; background:#1a2332; color:#fff; border:none; border-radius:5px; font-size:.75rem; font-weight:600; cursor:pointer;">
+                                Marcar pago
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="padding:1.25rem; font-size:.875rem; color:#94a3b8;">Nenhum pagamento registrado.</p>
+        {% endif %}
+    </div>
+
+    <!-- Ações -->
+    <div style="display:flex; gap:.75rem; justify-content:flex-end; margin-top:.5rem;">
+        <form action="/atletas/{{ atleta['id'] }}/alterar_status" method="POST"
+              onsubmit="return confirm('Tem certeza?')">
+            <button type="submit" class="btn {{ 'btn-delete' if atleta['status'] == 'ativo' else 'btn-edit' }}">
+                {{ 'Inativar atleta' if atleta['status'] == 'ativo' else 'Reativar atleta' }}
+            </button>
+        </form>
+        <a href="/atletas/{{ atleta['id'] }}/editar" class="btn btn-edit">Editar atleta</a>
+    </div>
+
+</div>
+</body>
+</html>

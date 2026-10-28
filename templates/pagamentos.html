@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamentos — Escolinha ABC</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f4f8;
+            color: #1a2332;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #1a2332;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            height: 56px;
+        }
+        nav .logo {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            margin-right: auto;
+        }
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: .875rem;
+            transition: color .15s;
+        }
+        nav a:hover { color: #fff; }
+
+        .page {
+            max-width: 900px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header { margin-bottom: 1.5rem; }
+        .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+        .page-header p { margin-top: .25rem; font-size: .875rem; color: #64748b; }
+
+        /* Painel de controle */
+        .controles {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: start;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+        .card-title {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: .65rem 1.25rem;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+        .card-body { padding: 1.25rem; }
+
+        .form-row {
+            display: flex;
+            gap: .75rem;
+            align-items: flex-end;
+        }
+        .form-row.wrap { flex-wrap: wrap; }
+        .form-field { display: flex; flex-direction: column; gap: .3rem; flex: 1; }
+        .form-field.full { flex: 1 1 100%; }
+        .form-field label {
+            font-size: .75rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .form-actions {
+            display: flex;
+            gap: .5rem;
+            margin-top: .9rem;
+        }
+        .dica {
+            margin-top: .75rem;
+            font-size: .75rem;
+            color: #94a3b8;
+        }
+        select, input[type="number"] {
+            padding: .5rem .75rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: .875rem;
+            color: #1a2332;
+            background: #f8fafc;
+            outline: none;
+            transition: border-color .15s;
+        }
+        select:focus, input:focus { border-color: #3b82f6; background: #fff; }
+
+        .btn {
+            padding: .5rem 1.1rem;
+            border-radius: 6px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity .15s;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .btn:hover { opacity: .85; }
+        .btn-primary { background: #1a2332; color: #fff; }
+        .btn-success { background: #15803d; color: #fff; }
+        .btn-ghost {
+            background: transparent;
+            color: #64748b;
+            border: 1.5px solid #e2e8f0;
+        }
+        .btn-pagar {
+            padding: .3rem .8rem;
+            background: #1a2332;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: .75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-pagar:hover { opacity: .85; }
+
+        /* Tabela */
+        .card-full {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+        .card-full .card-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-full .card-title span { font-size: .8rem; color: #94a3b8; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        th {
+            padding: .6rem 1.25rem;
+            text-align: left;
+            font-size: .7rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        td { padding: .75rem 1.25rem; font-size: .875rem; color: #1a2332; border-bottom: 1px solid #f1f5f9; }
+        tr:last-child td { border-bottom: none; }
+
+        .badge {
+            display: inline-block;
+            padding: .2rem .65rem;
+            border-radius: 99px;
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .badge-pago     { background: #dcfce7; color: #15803d; }
+        .badge-pendente { background: #fee2e2; color: #b91c1c; }
+
+        .tipo-tag {
+            font-size: .75rem;
+            font-weight: 600;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: .2rem .5rem;
+            border-radius: 4px;
+            text-transform: capitalize;
+        }
+
+        /* Resumo */
+        .resumo {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .resumo-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+        }
+        .resumo-card label {
+            font-size: .7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .resumo-card .valor {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a2332;
+        }
+        .resumo-card.verde .valor { color: #15803d; }
+        .resumo-card.vermelho .valor { color: #b91c1c; }
+
+        .vazio {
+            padding: 2.5rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: .875rem;
+        }
+        .vazio p { margin-top: .5rem; font-size: .8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/atletas" class="logo">Escolinha ABC</a>
+    <a href="/atletas">Atletas</a>
+    <a href="/relatorios">Relatórios</a>
+    <a href="/pagamentos">Pagamentos</a>
+</nav>
+
+<div class="page">
+
+    <div class="page-header">
+        <h1>Pagamentos</h1>
+        <p>Gerencie as cobranças mensais da escolinha</p>
+    </div>
+
+    <!-- Controles: filtrar + gerar -->
+    <div class="controles">
+
+        <!-- Filtrar -->
+        <div class="card">
+            <div class="card-title">Filtros</div>
+            <div class="card-body">
+                <form method="GET" action="/pagamentos">
+                    <div class="form-row wrap">
+                        <div class="form-field">
+                            <label for="mes">Mês</label>
+                            <select id="mes" name="mes">
+                                <option value="" {{ 'selected' if not mes else '' }}>Todos</option>
+                                <option value="01" {{ 'selected' if mes == '01' else '' }}>Janeiro</option>
+                                <option value="02" {{ 'selected' if mes == '02' else '' }}>Fevereiro</option>
+                                <option value="03" {{ 'selected' if mes == '03' else '' }}>Março</option>
+                                <option value="04" {{ 'selected' if mes == '04' else '' }}>Abril</option>
+                                <option value="05" {{ 'selected' if mes == '05' else '' }}>Maio</option>
+                                <option value="06" {{ 'selected' if mes == '06' else '' }}>Junho</option>
+                                <option value="07" {{ 'selected' if mes == '07' else '' }}>Julho</option>
+                                <option value="08" {{ 'selected' if mes == '08' else '' }}>Agosto</option>
+                                <option value="09" {{ 'selected' if mes == '09' else '' }}>Setembro</option>
+                                <option value="10" {{ 'selected' if mes == '10' else '' }}>Outubro</option>
+                                <option value="11" {{ 'selected' if mes == '11' else '' }}>Novembro</option>
+                                <option value="12" {{ 'selected' if mes == '12' else '' }}>Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="ano">Ano</label>
+                            <input type="number" id="ano" name="ano" placeholder="Todos"
+                                   value="{{ ano if ano else '' }}" min="2020" max="2099">
+                        </div>
+                        <div class="form-field full">
+                            <label for="categoria_id">Categoria</label>
+                            <select id="categoria_id" name="categoria_id">
+                                <option value="" {{ 'selected' if not categoria_id else '' }}>Todas</option>
+                                {% for c in categorias %}
+                                <option value="{{ c['id'] }}"
+                                    {{ 'selected' if c['id']|string == categoria_id|string else '' }}>
+                                    {{ c['nome'] }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <p class="dica">Para filtrar por data, preencha mês e ano juntos.</p>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <a href="/pagamentos" class="btn btn-ghost">Limpar filtros</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Gerar cobranças -->
+        <div class="card">
+            <div class="card-title">Gerar cobranças</div>
+            <div class="card-body">
+                <form method="POST" action="/pagamentos/gerar"
+                      onsubmit="return confirm('Gerar cobranças para todos os atletas ativos deste mês?')">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="mes_gerar">Mês</label>
+                            <select id="mes_gerar" name="mes" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="01">Janeiro</option>
+                                <option value="02">Fevereiro</option>
+                                <option value="03">Março</option>
+                                <option value="04">Abril</option>
+                                <option value="05">Maio</option>
+                                <option value="06">Junho</option>
+                                <option value="07">Julho</option>
+                                <option value="08">Agosto</option>
+                                <option value="09">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="ano_gerar">Ano</label>
+                            <input type="number" id="ano_gerar" name="ano" placeholder="2026"
+                                   min="2020" max="2099" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Gerar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Resumo financeiro (acompanha os mesmos filtros da tabela) -->
+    <div class="resumo">
+        <div class="resumo-card verde">
+            <label>Total recebido</label>
+            <span class="valor">R$ {{ "%.2f"|format(total_recebido) }}</span>
+        </div>
+        <div class="resumo-card vermelho">
+            <label>Total pendente</label>
+            <span class="valor">R$ {{ "%.2f"|format(total_pendente) }}</span>
+        </div>
+        <div class="resumo-card">
+            <label>Total esperado</label>
+            <span class="valor">R$ {{ "%.2f"|format(total_recebido + total_pendente) }}</span>
+        </div>
+    </div>
+
+    <!-- Descobre o nome da categoria filtrada, para usar no título da tabela -->
+    {% set meses = {'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'} %}
+    {% set ns = namespace(nome_categoria='') %}
+    {% for c in categorias %}
+        {% if c['id']|string == categoria_id|string %}
+            {% set ns.nome_categoria = c['nome'] %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Tabela de pagamentos -->
+    <div class="card-full">
+        <div class="card-title">
+            <div>
+                Pagamentos:
+                {% if mes and ano %}{{ meses.get(mes, mes) }} / {{ ano }}{% else %}todos os meses{% endif %}
+                ·
+                {% if ns.nome_categoria %}{{ ns.nome_categoria }}{% else %}todas as categorias{% endif %}
+            </div>
+            <span>{{ lista_pagamentos | length }} registros</span>
+        </div>
+
+        {% if lista_pagamentos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Mês</th>
+                    <th>Atleta</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in lista_pagamentos %}
+                <tr>
+                    <td>{{ p['mes_referencia'] }}</td>
+                    <td>
+                        <a href="/atletas/{{ p['atleta_id'] }}"
+                           style="color:#1a2332; text-decoration:none; font-weight:600;">
+                            {{ p['nome'] }}
+                        </a>
+                    </td>
+                    <td><span class="tipo-tag">{{ p['tipo'] }}</span></td>
+                    <td>R$ {{ "%.2f"|format(p['valor']) }}</td>
+                    <td>
+                        <span class="badge {{ 'badge-pago' if p['status'] == 'pago' else 'badge-pendente' }}">
+                            {{ p['status'] }}
+                        </span>
+                    </td>
+                    <td style="text-align:right;">
+                        {% if p['status'] == 'pendente' %}
+                        <form action="/pagamentos/{{ p['id'] }}/pagar" method="POST" style="display:inline;">
+                            <button type="submit" class="btn-pagar">Marcar pago</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="vazio">
+            Nenhum pagamento encontrado para os filtros selecionados.
+            <p>Ajuste os filtros ou use "Gerar" para criar as cobranças do mês.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>
